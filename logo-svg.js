@@ -22,10 +22,10 @@ var LS = {
 
     for (var i = 0;i < lines.length;i++) {
 
-      var args = lines[i].split(' ');
+      var args = $.trim(lines[i]).split(' ');
       var cmd   = args[0];
 
-      this.commands[cmd].apply(this,[args]);
+      if (lines[i] != "") this.commands[cmd].apply(this,[args]);
 
     }
 
@@ -36,6 +36,16 @@ var LS = {
   },
 
   commands: {
+    "SETX": function(args) {
+      this.x = parseFloat(args[1]);
+    },
+    "SETY": function(args) {
+      this.y = parseFloat(args[1]);
+    },
+    "SETXY": function(args) {
+      this.x = parseFloat(args[1]);
+      this.y = parseFloat(args[2]);
+    },
     "LT": function(args) {
       this.angle += parseFloat(args[1]);
     },
