@@ -10,25 +10,54 @@ var LS = {
   x: 300,
   y: 300,
   angle: -90,
+  cmds: [],
+  functions: [],
 
   initialize: function() {
     draw = SVG('svg').size(600, 600)
     
   },
 
-  run: function() {
-    var program = $('.program').val();
+  // runs a whole program
+  run: function(program) {
     var lines = program.split('\n');
-
     for (var i = 0;i < lines.length;i++) {
-
-      var args = $.trim(lines[i]).split(' ');
-      var cmd   = args[0];
-
-      if (lines[i] != "") this.commands[cmd].apply(this,[args]);
-
+      // variable substitution here? 
+      // downcasing here
+      this.cmds.push(this.parse(lines[i]));
     }
+    while (this.cmds.length > 0) {
+      var cmd = this.cmds.shift();
+      if (cmd.length > 0) {
+        var keyword = cmd[0][0];
+            args = cmd[0];
+        this.commands[keyword].apply(this,[args]);
+      }
+    }
+  },
 
+  // parses one line of code
+  parse: function(line) {
+    var cmds  = [],
+        words = $.trim(line).split(' ');
+    for (var i = 0; i < words.length; i++) {
+      var word = words[i];
+      // it's a recognized command
+      if (this.commands.hasOwnProperty(word)) {
+        // create a new command
+        cmds.push([word]);
+      } else if (this.functions.hasOwnProperty(word)) {
+        // execute user generated logo function
+        //this.functions[word]
+      } else {
+        if (cmds.length > 0) {
+          // add it to the previous command
+          cmds[cmds.length-1].push(word);
+        }
+      }
+    }
+console.log(cmds);
+    return cmds;
   },
 
   radians: function(angle) {
@@ -36,6 +65,20 @@ var LS = {
   },
 
   commands: {
+    "REPEAT": function(args) {
+console.log(args)
+      args.shift();
+      var reps = parseInt(args.shift());
+console.log(args)
+      args = args.join(' ');
+      // remove brackets
+console.log(args)
+      args = args.substr(1,args.length-2).split(' ');
+      for (var i = 0; i < reps; i++) {
+console.log(args)
+        this.cmds.push(this.parse(args));
+      }
+    },
     "SETX": function(args) {
       this.x = parseFloat(args[1]);
     },
