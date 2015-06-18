@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--<html lang="en" manifest="index.manifest">-->
+  <head>
+    
+    <title>Logo-SVG</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="bower_components/bootstrap-css/css/bootstrap.css" rel="stylesheet">
+    <link href="bower_components/fontawesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="logo-svg.css" rel="stylesheet">
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap-css/js/bootstrap.min.js"></script>
+    <script src="bower_components/svg.js/dist/svg.min.js"></script>
+    <script src="logo-svg.js"></script>
+
+  </head>
+
+  <body class="container-fluid">
+
+    <div class="col-md-6" id="svg"></div>
+
+    <div class="col-md-6">
+
+<textarea cols="80" rows="20" class="program">
+TO SIDE :N :L
+
+  FORWARD :L
+    LEFT 90
+    FORWARD :L
+    RIGHT 90
+    FORWARD :L
+    RIGHT 90
+    FORWARD :L
+    LEFT 90
+  FORWARD :L
+
+  RIGHT 360/:N
+
+END
+
+TO COG :N :L
+
+  REPEAT :N SIDE :N :L
+
+END
+
+COG 16 20
+</textarea>
+
+      <p>
+        <a class="btn btn-primary" onClick="LS.run()">Run</a>
+        <a class="btn btn-default download" onClick="LS.download()">Download</a>
+      </p>
+
+    </div>
+
+  </body>
+
+</html>

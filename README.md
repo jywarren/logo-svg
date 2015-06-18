@@ -1,0 +1,18 @@
+#Logo-SVG
+
+A minimal Logo command set for SVG.js:
+
+* FORWARD/FW
+* BACKWARD
+* LEFT/LT
+* RIGHT/RT
+* RESET
+* SETX, SETY, SETXY
+* HOME
+* CLEARSCREEN/CLEAR/CS
+* REPEAT
+
+Maybe:
+
+* TO FOO :ARG1 :ARG2 BODY END
+

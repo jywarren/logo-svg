@@ -1,0 +1,10 @@
+body {
+  background:#eef;
+  padding:20px;
+}
+
+#svg {
+  background:white;
+  width:600px;
+  height:600px;
+}
