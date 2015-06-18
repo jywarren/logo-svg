@@ -67,6 +67,27 @@ var LS = {
 
     this.x = newx;
     this.y = newy;
+  },
+
+  download: function() {
+    var svg = $('svg')[0];
+    var serializer = new XMLSerializer();
+    var svg_blob = new Blob([serializer.serializeToString(svg)],
+                            {'type': "image/svg+xml"});
+    var url = URL.createObjectURL(svg_blob);
+    var lnk = document.createElement("a");
+
+    lnk.href = url;
+    lnk.download = prompt('Enter a filename','logo.svg');
+
+    if (document.createEvent) {
+      event = document.createEvent("MouseEvents");
+      event.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      lnk.dispatchEvent(event);
+    } else if (lnk.fireEvent) {
+      lnk.fireEvent("onclick");
+    }
+
   }
 
 }
