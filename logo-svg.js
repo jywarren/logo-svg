@@ -20,17 +20,18 @@ var LS = {
 
   // runs a whole program
   run: function(program) {
-    var lines = program.split('\n');
-    for (var i = 0;i < lines.length;i++) {
-      // variable substitution here? 
-      // downcasing here
-      this.cmds.push(this.parse(lines[i]));
-    }
+    // turn newlines into spaces! whoa
+    program = program.replace(/\n/g,' ')
+    // variable substitution here? 
+    // downcasing here
+    this.cmds = this.cmds.concat(this.parse(program));
+    // run pre-processed program, which is now a flattened array 
+    // of executable statements with no loops
     while (this.cmds.length > 0) {
       var cmd = this.cmds.shift();
       if (cmd.length > 0) {
-        var keyword = cmd[0][0];
-            args = cmd[0];
+        var keyword = cmd[0];
+            args = cmd;
         this.commands[keyword].apply(this,[args]);
       }
     }
@@ -39,24 +40,37 @@ var LS = {
   // parses one line of code
   parse: function(line) {
     var cmds  = [],
+        loops = [], // loops need not be known outside the parse context
         words = $.trim(line).split(' ');
+    // sort each word
     for (var i = 0; i < words.length; i++) {
-      var word = words[i];
-      // it's a recognized command
-      if (this.commands.hasOwnProperty(word)) {
+      var word = $.trim(words[i]);
+      if (loops.length > 0) { // we're in a block 
+        loops[0].cmds.push(word);
+        // if the word is the recognized terminator for this block type
+        if (word == this.blockCommands[loops[0].type].terminator) {
+          // end the block and run it with its args
+          cmds = cmds.concat(this.blockCommands[loops[0].type].f.apply(this,[loops[0].cmds]));
+          loops.shift();
+        }
+      } else if (this.commands.hasOwnProperty(word)) { // it's a recognized command
         // create a new command
         cmds.push([word]);
-      } else if (this.functions.hasOwnProperty(word)) {
-        // execute user generated logo function
-        //this.functions[word]
       } else {
-        if (cmds.length > 0) {
-          // add it to the previous command
-          cmds[cmds.length-1].push(word);
+        // detect if a code block is about to begin,
+        // by comparing to our list of block keywords
+        if (this.blockCommands.hasOwnProperty(word)) {
+          // create a place to store the statements in this block
+          loops.push({
+            type: word,
+            cmds: []
+          });
+        } else {
+          // add it to the last statement
+          if (word != "") cmds[cmds.length-1].push(word);
         }
       }
     }
-console.log(cmds);
     return cmds;
   },
 
@@ -64,21 +78,49 @@ console.log(cmds);
     return angle / 180 * Math.PI;
   },
 
-  commands: {
-    "REPEAT": function(args) {
-console.log(args)
-      args.shift();
-      var reps = parseInt(args.shift());
-console.log(args)
-      args = args.join(' ');
-      // remove brackets
-console.log(args)
-      args = args.substr(1,args.length-2).split(' ');
-      for (var i = 0; i < reps; i++) {
-console.log(args)
-        this.cmds.push(this.parse(args));
+  blockCommands: {
+    "REPEAT": {
+      terminator: ']', 
+      f: function(args) {
+        var reps = parseInt(args.shift()),
+            cmds = [];
+        // remove brackets
+        args = args.splice(1,args.length-2);
+        // re-add spaces for parsing
+        var string = args.join(' ');
+        // add to main cmds array
+        for (var i = 0; i < reps; i++) {
+          cmds = cmds.concat(this.parse(string));
+        }
+        return cmds;
       }
     },
+    "TO": {
+      terminator: 'END', 
+      f: function(args) {
+        // add self to global context
+        var f = {
+          cmds: []
+        }
+        f.name = args.shift();
+console.log(args)
+        for (var i = 0; i < args; i++) {
+          // if it's a function argument, which start with ":"
+          if (args[i][0] == ":") {
+            // store it in the arguments array
+            f.args.push(args[i]);
+          } else {
+            f.cmds.push(args[i]);
+          }
+        }
+console.log(f)
+        this.functions.push(f);
+        return [];
+      }
+    }
+  },
+
+  commands: {
     "SETX": function(args) {
       this.x = parseFloat(args[1]);
     },
