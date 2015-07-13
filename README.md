@@ -33,6 +33,18 @@ Addendum: As this progressed, it became more about me learning how to write a pa
 
 ****
 
+##Developers
+
+You'll need `npm` and bower, the latter with `npm install -g bower`.
+
+I'm slowly cleaning this code up as an exercise for myself, but as of now you'll need to install the Grunt cli:
+
+`npm install -g grunt-cli`
+
+And run `grunt` from the root directory to watch for code changes and compile them into `dist/logosvg.js` on the fly.
+
+****
+
 Sketchpad for parsing math expressions:
 
 * on initial parse, for each arg, are we expecting a term for a prev. math expression? 
