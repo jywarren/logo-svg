@@ -30,3 +30,21 @@ Quite messy, not as generalizable as I'd like, so please chip in!
 --Jeffrey Warren (unterbahn.com)
 
 Addendum: As this progressed, it became more about me learning how to write a parser, by trial and error -- a thought experiment. 
+
+****
+
+Sketchpad for parsing math expressions:
+
+* on initial parse, for each arg, are we expecting a term for a prev. math expression? 
+  * read the final char of the last word; is it */%^+-
+  * if so, add to previous expression
+* on initial parse, if encounter a math expression
+  * add it to the previous word
+* on final evaluation, (after variable subsitution)
+  * is the word not a number? using isNaN(foo)
+  * then eval() it
+
+AND what about parentheses?
+AND what about conditionals? Would the above work for conditionals, if we add an IF blockCommand?
+
+

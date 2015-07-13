@@ -14,7 +14,7 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/bootstrap-css/js/bootstrap.min.js"></script>
     <script src="bower_components/svg.js/dist/svg.min.js"></script>
-    <script src="logo-svg.js"></script>
+    <script src="dist/logo-svg.js"></script>
 
   </head>
 
@@ -55,11 +55,20 @@ COG 20 10
 -->
 
       <p>
-        <a class="btn btn-lg btn-primary" onClick="LS.run($('.program').val())"><i class="fa fa-play"></i> Run</a>
-        <a class="btn btn-lg btn-default download" onClick="LS.download()"><i class="fa fa-download"></i> Download</a>
+        <a class="btn btn-lg btn-primary" onClick="logosvg.run($('.program').val())"><i class="fa fa-play"></i> Run</a>
+        <a class="btn btn-lg btn-default download" onClick="logosvg.download()"><i class="fa fa-download"></i> Download</a>
       </p>
 
     </div>
+
+    <script>
+      var logosvg;
+      jQuery(document).ready(function($) {
+
+        logosvg = new LogoSvg.Parser();
+
+      });
+    </script>
 
   </body>
 
