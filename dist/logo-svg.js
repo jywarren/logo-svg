@@ -67,15 +67,9 @@ var LogoSvg = {};
   };
 })();
 
-// Logo code block storage
-LogoSvg.Parser = Class.extend({
-  init: function(name,template) {
-    this.name = name;
-    this.template = template;
-    this.cmds = [];
-  }
-})
-
+/* 
+ * eventually break into App and Parser 
+ */
 LogoSvg.Parser = Class.extend({
 
   init: function() {
@@ -194,14 +188,15 @@ LogoSvg.Parser = Class.extend({
             template: that.functionDefinitions[word],
             // used in functions only:
             generate: function(args) {
-              var newCmds = [];
-              that.template.cmds = LS.cleanArray(that.template.cmds);
+              var newCmds = [],
+                  fn = this;
+              fn.template.cmds = that.cleanArray(fn.template.cmds);
               // Parse out variables and replace them
-              for (var i = 0; i < that.template.cmds.length; i++) {
+              for (var i = 0; i < fn.template.cmds.length; i++) {
                 var matched = false, match;
-                for (var j = 0; j < that.template.args.length; j++) {
+                for (var j = 0; j < fn.template.args.length; j++) {
                   
-                  if (that.template.cmds[i] == that.template.args[j]) {
+                  if (fn.template.cmds[i] == fn.template.args[j]) {
                     matched = true;
                     match = j;
                   }
@@ -211,7 +206,7 @@ LogoSvg.Parser = Class.extend({
                   newCmds.push(args[match]);
                 } else {
                   // copy into generated cmds:
-                  newCmds.push(that.template.cmds[i]);
+                  newCmds.push(fn.template.cmds[i]);
                 }
               }
               // re-join into string for parsing; inefficient
@@ -368,3 +363,12 @@ LogoSvg.Parser = Class.extend({
   }
 
 });
+
+// Logo code block storage
+LogoSvg.Block = Class.extend({
+  init: function(name,template) {
+    this.name = name;
+    this.template = template;
+    this.cmds = [];
+  }
+})

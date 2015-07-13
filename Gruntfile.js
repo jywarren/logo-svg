@@ -23,7 +23,8 @@ module.exports = function(grunt) {
             dist: {
                 src: [
                     'src/Class.js',
-                    'src/LogoSvg.js',
+                    'src/LogoSvg.Parser.js',
+                    'src/LogoSvg.Block.js'
                 ],
                 dest: 'dist/logo-svg.js',
             }
