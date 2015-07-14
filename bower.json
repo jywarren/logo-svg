@@ -1,6 +1,6 @@
 {
   "name": "logo-svg",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "dependencies": {
     "fontawesome":                        "~4.2.0",
     "bootstrap-css":                      "~3",
