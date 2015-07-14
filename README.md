@@ -47,14 +47,11 @@ And run `grunt` from the root directory to watch for code changes and compile th
 
 Sketchpad for parsing math expressions:
 
-* on initial parse, for each arg, are we expecting a term for a prev. math expression? 
-  * read the final char of the last word; is it */%^+-
-  * if so, add to previous expression
-* on initial parse, if encounter a math expression
-  * add it to the previous word
-* on final evaluation, (after variable subsitution)
-  * is the word not a number? using isNaN(foo)
-  * then eval() it
+
+This works now, but expressions with variables choke: ":N/360" remains one word, so variable recognition doesn't trigger.
+
+  SO! um. We must glob our math expressions *after* variable substitution, OR we must be able to substitute variables buried within words
+  AND we'd have to consider breaking out our variables into their own words, if they're not space-delimited from a math expression
 
 AND what about parentheses?
 AND what about conditionals? Would the above work for conditionals, if we add an IF blockCommand?

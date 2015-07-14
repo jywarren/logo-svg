@@ -13,6 +13,12 @@ LogoSvg.Parser = Class.extend({
     this.functionDefinitions = {};
  
     draw = SVG('svg').size(600, 600);
+
+    // shortcuts:
+// WHY don't these see doMath?
+    this.commands["LT"] = this.commands['LEFT'];
+    this.commands["RT"] = this.commands['RIGHT'];
+    this.commands["FW"] = this.commands['FORWARD'];
   },
 
   cleanArray: function(array) {
@@ -31,8 +37,41 @@ LogoSvg.Parser = Class.extend({
     program = program.replace(/\n/g,' ')
                      .replace(/\[/g,' [ ')
                      .replace(/\]/g,' ] ')
-    // downcase here
+
+    // downcase here, eventually
+
     this.cmds = this.cmds.concat(this.parse.apply(this,[program])());
+
+    // we do math expression globbing here
+    for (var i = 0; i < this.cmds.length; i++) {
+      var words = this.cmds[i];
+      for (var j = 0; j < words.length; j++) {
+        var word = words[j];
+        /* =======================
+         * We're in a math expression,
+         * because the first letter of the word is a math operator.
+         * If math expressions are not space-delimited,
+         * they'll be caught in the final execution.
+         * =======================
+         */
+        if ("*%/+-^()".indexOf(word[0]) >= 0) {
+          // add it to the end of the last word
+          this.cmds[i][j-1] = this.cmds[i][j-1] + word;
+          this.cmds[i].splice(j,1);
+ 
+        /* =======================
+         * We're in a math expression,
+         * because the last word ends in a math operator.
+         * =======================
+         */
+        } else if (j > 0 && "*%/+-^()".indexOf(words[j-1][words[j-1].length-1]) >= 0) {
+          // add it to the end of the last word
+          this.cmds[i][j-1] = this.cmds[i][j-1] + word;
+          this.cmds[i].splice(j,1);
+        }
+      }
+    }
+
     // run pre-processed program, which is now a flattened array 
     // of executable statements with no blocks
     while (this.cmds.length > 0) {
@@ -45,7 +84,11 @@ LogoSvg.Parser = Class.extend({
     }
   },
 
-  // parses a string of code
+  /*
+   * Parses a string of code.
+   * In the switch-like statement, could we implement 
+   * everything *as a user function* to bootstrap?
+   */ 
   parse: function(string) {
     var cmds  = [],
         blocks = [], // blocks need not be known outside the parse context
@@ -55,7 +98,7 @@ LogoSvg.Parser = Class.extend({
       // sort each word
       for (var i = 0; i < words.length; i++) {
         var word = $.trim(words[i]);
-     
+
         /* =======================
          * We're in a user function call
          * =======================
@@ -78,11 +121,12 @@ LogoSvg.Parser = Class.extend({
          */
         } else if (blocks.length > 0) { // we're in a block 
           var block = blocks[0];
+          // add this word to the block's cmds array
           block.cmds.push(word);
-          // if the word is the recognized terminator 
-          // for this block type
+          // but, if the word is the recognized 
+          // terminator for this block type, end the block
           if (word == block.template.terminator) {
-            // end the block and run it with its args
+            // then run it with its args
             cmds = cmds.concat(
               block.template.f.apply(
                 that,[block.cmds]
@@ -228,38 +272,42 @@ LogoSvg.Parser = Class.extend({
     }
   },
 
+  /*
+   * Catches unevaluated math expressions,
+   * like those including "%/^+-", and evals them.
+   */
+  doMath: function(expression) {
+    if (isNaN(expression)) {
+      var output = eval(expression);
+    } else {
+      var output = expression;
+    }
+    return parseFloat(output);
+  },
+
   commands: {
     "SETX": function(args) {
-      this.x = parseFloat(args[1]);
+      this.x = this.doMath(args[1]);
     },
     "SETY": function(args) {
-      this.y = parseFloat(args[1]);
+      this.y = this.doMath(args[1]);
     },
     "SETXY": function(args) {
-      this.x = parseFloat(args[1]);
-      this.y = parseFloat(args[2]);
-    },
-    "LT": function(args) {
-      this.angle -= parseFloat(args[1]);
-    },
-    "RT": function(args) {
-      this.angle += parseFloat(args[1]);
+      this.x = this.doMath(args[1]);
+      this.y = this.doMath(args[2]);
     },
     "LEFT": function(args) {
-      this.angle -= parseFloat(args[1]);
+      this.angle -= this.doMath(args[1]);
     },
     "RIGHT": function(args) {
-      this.angle += parseFloat(args[1]);
+      this.angle += this.doMath(args[1]);
     },
     "FORWARD": function(args) {
-      this.crawl(args[1]);
-    },
-    "FW": function(args) {
-      this.crawl(args[1]);
+      this.crawl(this.doMath(args[1]));
     },
     "BACKWARD": function(args) {
-      this.crawl(-args[1]);
-    },
+      this.crawl(this.doMath(-args[1]));
+    }
   },
 
   crawl: function(d) {

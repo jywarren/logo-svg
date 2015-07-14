@@ -37,7 +37,7 @@ TO SIDE :N :L
     LEFT 90
   FORWARD :L
 
-  RIGHT :N
+  RIGHT 360/ :N
 
 END
 
@@ -65,7 +65,7 @@ COG 20 10
       var logosvg;
       jQuery(document).ready(function($) {
 
-        logosvg = new LogoSvg.Parser();
+        logosvg = new LogoSvg.Parser({debug:true});
 
       });
     </script>
