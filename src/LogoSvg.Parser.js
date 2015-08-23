@@ -3,6 +3,9 @@
  */
 LogoSvg.Parser = Class.extend({
 
+  strokeWidth: 1,
+  strokeColor: "red",
+
   init: function() {
 
     this.x = arguments['x'] || 300;
@@ -19,6 +22,19 @@ LogoSvg.Parser = Class.extend({
     this.commands["LT"] = this.commands['LEFT'];
     this.commands["RT"] = this.commands['RIGHT'];
     this.commands["FW"] = this.commands['FORWARD'];
+
+    var _parser = this;
+
+    this.crawl = function(d) {
+      var newx = this.x + d * Math.cos(this.radians(this.angle));
+      var newy = this.y + d * Math.sin(this.radians(this.angle));
+ 
+      draw.line(this.x, this.y, newx, newy).stroke({ width: _parser.strokeWidth, color: _parser.strokeColor })
+ 
+      this.x = newx;
+      this.y = newy;
+    }
+
   },
 
   cleanArray: function(array) {
@@ -307,17 +323,13 @@ LogoSvg.Parser = Class.extend({
     },
     "BACKWARD": function(args) {
       this.crawl(this.doMath(-args[1]));
+    },
+    "COLOR": function(args) {
+      this.strokeColor = "rgb("+args[1]+","+args[2]+","+args[3]+")";
+    },
+    "PENWIDTH": function(args) {
+      this.strokeWidth = args[1];
     }
-  },
-
-  crawl: function(d) {
-    var newx = this.x + d * Math.cos(this.radians(this.angle));
-    var newy = this.y + d * Math.sin(this.radians(this.angle));
-
-    draw.line(this.x, this.y, newx, newy).stroke({ width: 1 })
-
-    this.x = newx;
-    this.y = newy;
   },
 
   download: function() {
