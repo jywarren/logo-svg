@@ -1,5 +1,7 @@
 #Logo-SVG
 
+**Note!** Abandoning in favor of https://github.com/jywarren/papert - an SVG-enabled fork of the Papert logo parser!
+
 A minimal Logo command set for SVG.js:
 
 * FORWARD/FW
